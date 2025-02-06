@@ -7,7 +7,7 @@ import { fetchNui } from "../utils/fetchNui";
 import { useVisibility } from "../providers/VisibilityProvider";
 
 interface DocumentData {
-  url: string;
+  imageurl: string;
   author: number;
 }
 
@@ -23,7 +23,7 @@ debugData([
     action: "sendDocument",
     data: [
       {
-        url: 'https://www.krysztaly.pl/wp-content/uploads/2023/05/placeholder-1.png',
+        imageurl: 'https://www.krysztaly.pl/wp-content/uploads/2023/05/placeholder-1.png',
         author: 44
       }
     ],
@@ -55,7 +55,7 @@ const App: React.FC = () => {
           <Image
             radius="sm"
             fit="contain"
-            src={documentData[0].url}
+            src={documentData[0].imageurl}
             mah={'70vh'}
           />
         )}
