@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { debugData } from "../utils/debugData";
-import { Card, Image, ActionIcon, Group } from "@mantine/core";
+import { Paper, Text, Button, Stack, Group, ActionIcon } from "@mantine/core";
 import { useNuiEvent } from "../hooks/useNuiEvent";
-import { IconSquareXFilled } from '@tabler/icons-react';
+import { IconX } from "@tabler/icons-react";
 import { fetchNui } from "../utils/fetchNui";
 import { useVisibility } from "../providers/VisibilityProvider";
 
-interface DocumentData {
-  imageurl: string;
-  author: number;
+interface UIData {
+  title?: string;
+  message?: string;
 }
 
 debugData([
@@ -18,24 +18,28 @@ debugData([
   },
 ]);
 
-debugData([
-  {
-    action: "sendDocument",
-    data: [
-      {
-        imageurl: 'https://www.krysztaly.pl/wp-content/uploads/2023/05/placeholder-1.png',
-        author: 44
-      }
-    ],
-  },
-]);
+debugData(
+  [
+    {
+      action: "setData",
+      data: {
+        title: "Witaj w Boilerplate",
+        message: "To jest przykładowe UI zbudowane z Mantine",
+      },
+    },
+  ],
+  1100
+);
 
 const App: React.FC = () => {
-  const [documentData, setDocumentData] = useState<DocumentData[]>([]);
+  const [data, setData] = useState<UIData>({
+    title: "Przykładowy tytuł",
+    message: "Przykładowa wiadomość",
+  });
   const { setVisible } = useVisibility();
 
-  useNuiEvent('sendDocument', (data: DocumentData[]) => {
-    setDocumentData(data);
+  useNuiEvent("setData", (receivedData: UIData) => {
+    setData(receivedData);
   });
 
   const handleClose = () => {
@@ -43,23 +47,39 @@ const App: React.FC = () => {
     fetchNui("hideFrame");
   };
 
+  const handleSubmit = () => {
+    fetchNui("submitData", {
+      action: "example_action",
+      timestamp: Date.now(),
+    });
+    handleClose();
+  };
+
   return (
     <div className="nui-wrapper">
-      <Card withBorder maw={'90vw'} mah={'90vh'} >
-        <Group justify="flex-end" mb={'xs'}>
-          <ActionIcon variant="subtle" color="gray" onClick={handleClose}>
-            <IconSquareXFilled stroke={1.5} />
-          </ActionIcon>
-        </Group>
-        {documentData.length > 0 && (
-          <Image
-            radius="sm"
-            fit="contain"
-            src={documentData[0].imageurl}
-            mah={'70vh'}
-          />
-        )}
-      </Card>
+      <Paper shadow="xl" p="sm" w={400} withBorder>
+        <Stack gap="md">
+          <Group justify="space-between" mb="xs">
+            <Text size="xl" fw={700}>
+              {data.title}
+            </Text>
+            <ActionIcon variant="subtle" color="gray" onClick={handleClose}>
+              <IconX size={20} />
+            </ActionIcon>
+          </Group>
+
+          <Text size="sm" c="dimmed">
+            {data.message}
+          </Text>
+
+          <Group justify="flex-end" mt="md">
+            <Button variant="light" onClick={handleClose}>
+              Anuluj
+            </Button>
+            <Button onClick={handleSubmit}>Zatwierdź</Button>
+          </Group>
+        </Stack>
+      </Paper>
     </div>
   );
 };
